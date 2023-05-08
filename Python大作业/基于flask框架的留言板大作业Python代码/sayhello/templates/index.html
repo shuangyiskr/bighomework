@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block content %}
+<h1>你好! {{ session['username'] }}</h1>
+<a href="/logout">Logout</a>
+
+    <div class="hello-form">
+        {{ render_form(form, action=request.full_path) }}
+    </div>
+
+    <h5>{{ messages|length }} messages
+        <small class="float-right">
+            <a href="#bottom" title="Go Bottom">&darr;</a>
+            <a href="{{ url_for('generate_messages') }}" class="btn btn-primary">生成10条随机信息</a>
+        </small>
+    </h5>
+
+    <div class="list-group">
+        {% for message in messages %}
+            <a class="list-group-item list-group-item-action flex-column">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1 text-success">{{ message.name }}
+                        <small class="text-muted"> #{{ loop.revindex }}</small>
+                    </h5>
+                    <small data-toggle="tooltip" data-placement="top"
+                           data-timestamp="{{ message.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ') }}"
+                           data-delay="500">
+                        {{ moment(message.timestamp).fromNow(refresh=True) }}
+                    </small>
+                </div>
+                <p class="mb-1">{{ message.body }}</p>
+                <form action="{{ url_for('delete_message', message_id=message.id) }}" method="post">
+            <button type="submit" class="btn btn-danger">删除</button>
+                </form>
+                 <form action="{{ url_for('reply_message', message_id=message.id) }}" method="post">
+        <button type="submit" class="btn btn-primary">回复</button>
+    </form>
+
+
+    <!-- 显示回复留言 -->
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}
